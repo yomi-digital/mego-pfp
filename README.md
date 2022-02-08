@@ -43,7 +43,8 @@ If you want to deploy this contract you must create a `configs` folder adding a 
     "contract_address": "",
     "owner_mnemonic": "YourMnemonic",
     "owner_address": "OwnerAddress",
-    "me_address": "MEAddress",
+    "mego": "MEGOAddress",
+    "pfp": "ERC721Address",
     "provider": "http://localhost:7545"
 }
 ```
@@ -59,11 +60,15 @@ This script will call the native `truffle` compilation, will extract the address
 After we've deployed our contract we'll be able to run tests:
 
 ```
-npm run test:add ganache
+npm run test:link ganache
 ```
 
-This test will check if the name exists (turinglabs.dao), we'll create a new PGP key with `openpgp` module and will write it into the contract in form of `hexadecimal` string.
+This test will check if the name exists (turinglabs.ape), we'll create a link between PFP image and name itself.
 
-Then it will retrieve it from the contract and will encrypt a message (Hello, World!) with specified key.
+Use other tests to get name or pfp:
+```
+npm run test:getname ganache
+npm run test:getpfp ganache
+```
 
 Done!
