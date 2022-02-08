@@ -21,6 +21,7 @@ module.exports = {
             provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.PROVIDER),
             network_id: 80001,
             confirmations: 2,
+            gas: 6720000,
             gasPrice: "5000000000",
             timeoutBlocks: 200,
             skipDryRun: true
@@ -30,7 +31,8 @@ module.exports = {
             network_id: 137,
             confirmations: 2,
             timeoutBlocks: 200,
-            gasPrice: "100000000000",
+            gas: 6720000,
+            gasPrice: "250000000000",
             skipDryRun: true
         }
     },
