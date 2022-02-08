@@ -20,8 +20,23 @@ async function main() {
         console.log('Testing contract: ' + argv._)
         console.log('--')
         try {
-            const retrieve = await nftContract.methods.returnName(1).call();
-            console.log(retrieve)
+            const paid = await nftContract.methods.paid().call()
+            const linked = await nftContract.methods.linked().call()
+            const amount = await nftContract.methods.amount().call()
+            console.log('Paid: ' + paid)
+            console.log('Linked: ' + linked)
+            console.log('Reward amount: ' + amount)
+            const toSendNumber = linked - paid;
+            const toSend = toSendNumber * amount
+            console.log('To send: ' + toSendNumber + '(' + toSend + ')')
+
+            await nftContract.methods.depositEarnings().send({
+                from: configs.owner_address,
+                value: toSend
+            }).on('transactionHash', tx => {
+                console.log('Pending transaction: ' + tx)
+            })
+            console.log('Deposit sent!')
         } catch (e) {
             console.log(e.message)
         }

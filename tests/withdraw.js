@@ -20,8 +20,12 @@ async function main() {
         console.log('Testing contract: ' + argv._)
         console.log('--')
         try {
-            const retrieve = await nftContract.methods.returnName(1).call();
-            console.log(retrieve)
+            await nftContract.methods.withdrawMatic().send({
+                from: configs.manager
+            }).on('transactionHash', tx => {
+                console.log('Pending transaction: ' + tx)
+            })
+            console.log('Funds withdrew!')
         } catch (e) {
             console.log(e.message)
         }

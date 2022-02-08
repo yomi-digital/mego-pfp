@@ -20,8 +20,12 @@ async function main() {
         console.log('Testing contract: ' + argv._)
         console.log('--')
         try {
-            const retrieve = await nftContract.methods.returnName(1).call();
-            console.log(retrieve)
+            await nftContract.methods.fixManager(configs.manager).send({
+                from: configs.owner_address
+            }).on('transactionHash', tx => {
+                console.log('Pending transaction: ' + tx)
+            })
+            console.log('Manager fixed!')
         } catch (e) {
             console.log(e.message)
         }

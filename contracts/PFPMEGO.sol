@@ -13,6 +13,10 @@ contract PFPMEGO is Ownable {
     IERC721 private _pfp;
     IMEGO private _mego;
     string private gate = "ape";
+    address public manager;
+    uint256 public linked = 0;
+    uint256 public paid = 0;
+    uint256 public amount = 2 ether;
     mapping(uint256 => uint256) public _pfpToName;
     mapping(uint256 => uint256) public _nameToPfp;
     mapping(uint256 => string) public _idToName;
@@ -40,6 +44,21 @@ contract PFPMEGO is Ownable {
 
     function fixGate(string memory _gate) public onlyOwner {
         gate = _gate;
+    }
+
+    function fixManager(address _manager) public onlyOwner {
+        manager = _manager;
+    }
+
+    function fixReward(uint256 _amount) public onlyOwner {
+        amount = _amount;
+    }
+
+    function depositEarnings() public payable onlyOwner {
+        uint256 to_pay = linked - paid;
+        uint256 amount_to_pay = to_pay * amount;
+        require(msg.value > 0 && msg.value == amount_to_pay, "Amount is wrong");
+        paid += to_pay;
     }
 
     /**
@@ -82,10 +101,14 @@ contract PFPMEGO is Ownable {
     function linkName(string memory _name, uint256 pfpId) public {
         require(canAdd(_name, pfpId), "Can't link.");
         uint256 nameId = returnNameId(_name);
-        require(_nameToPfp[nameId] == 0 && _pfpToName[pfpId] == 0, "Try to link again nfts.");
+        require(
+            _nameToPfp[nameId] == 0 && _pfpToName[pfpId] == 0,
+            "Try to link again nfts."
+        );
         _pfpToName[pfpId] = nameId;
         _nameToPfp[nameId] = pfpId;
         _idToName[nameId] = string(abi.encodePacked(_name, ".", gate));
+        linked++;
     }
 
     /**
@@ -98,6 +121,7 @@ contract PFPMEGO is Ownable {
         _pfpToName[pfpId] = 0;
         _nameToPfp[nameId] = 0;
         _idToName[nameId] = "";
+        linked--;
     }
 
     /**
@@ -124,11 +148,15 @@ contract PFPMEGO is Ownable {
         );
         return pfpId;
     }
-    
+
     /**
      * Get pfp for given name
      */
-    function returnPfpURI(string memory _name) public view returns (string memory) {
+    function returnPfpURI(string memory _name)
+        public
+        view
+        returns (string memory)
+    {
         uint256 nameId = returnNameId(_name);
         uint256 pfpId = _nameToPfp[nameId];
         require(
@@ -136,5 +164,15 @@ contract PFPMEGO is Ownable {
             "Owner is not the same."
         );
         return _pfp.tokenURI(pfpId);
+    }
+
+    function withdrawMatic() public {
+        require(
+            msg.sender == owner() || msg.sender == manager,
+            "Only owner or manager can withdraw from contract."
+        );
+        uint256 balance = address(this).balance;
+        require(balance > 0, "Nothing to withdraw!");
+        payable(msg.sender).transfer(balance);
     }
 }

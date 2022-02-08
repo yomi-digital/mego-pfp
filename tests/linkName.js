@@ -20,7 +20,7 @@ async function main() {
         console.log('Testing contract: ' + argv._)
         console.log('--')
         try {
-            await nftContract.methods.linkName("turinglabs", 4).send({
+            await nftContract.methods.linkName("turinglabs", 1).send({
                 from: configs.owner_address
             }).on('transactionHash', tx => {
                 console.log('Pending transaction: ' + tx)
