@@ -15,7 +15,9 @@ async function main() {
         const web3Instance = new web3(provider);
         const nftContract = new web3Instance.eth.Contract(
             NFT_CONTRACT_ABI,
-            configs.contract_address, { gasLimit: "2000000" }
+            configs.contract_address, {
+                gasLimit: "2000000"
+            }
         );
         console.log('Testing contract: ' + argv._)
         console.log('--')
@@ -29,14 +31,17 @@ async function main() {
             const toSendNumber = linked - paid;
             const toSend = toSendNumber * amount
             console.log('To send: ' + toSendNumber + '(' + toSend + ')')
-
-            await nftContract.methods.depositEarnings().send({
-                from: configs.owner_address,
-                value: toSend
-            }).on('transactionHash', tx => {
-                console.log('Pending transaction: ' + tx)
-            })
-            console.log('Deposit sent!')
+            if (toSendNumber > 0) {
+                await nftContract.methods.depositEarnings().send({
+                    from: configs.owner_address,
+                    value: toSend
+                }).on('transactionHash', tx => {
+                    console.log('Pending transaction: ' + tx)
+                })
+                console.log('Deposit sent!')
+            } else {
+                console.log('Nothing to deposit')
+            }
         } catch (e) {
             console.log(e.message)
         }
